@@ -7,13 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ Enable CORS for all origins & routes
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 PINATA_API_KEY = os.getenv("PINATA_API_KEY")
 PINATA_SECRET_KEY = os.getenv("PINATA_SECRET_KEY")
 
 PINATA_URL = "https://api.pinata.cloud/pinning/pinFileToIPFS"
-
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
@@ -44,11 +45,10 @@ def upload_file():
         "url": f"https://gateway.pinata.cloud/ipfs/{cid}"
     })
 
-
 @app.route("/", methods=["GET"])
 def home():
     return {"message": "IPFS Backend Running Successfully 🚀"}
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    # ⚠️ Required for Render deployment
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
